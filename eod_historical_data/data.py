@@ -31,10 +31,15 @@ def get_eod_data(symbol, exchange, start=None, end=None,
     endpoint = "/eod/{symbol_exchange}".format(symbol_exchange=symbol_exchange)
     url = EOD_HISTORICAL_DATA_API_URL + endpoint
     params = {
-        "api_token": api_key or get_api_key(),
-        "from": _format_date(start),
-        "to": _format_date(end)
+        "api_token": api_key or get_api_key()
     }
+
+    if start:
+        params["from"] = _format_date(start)
+
+    if end:
+        params["to"] = _format_date(end)
+
     r = session.get(url, params=params)
     if r.status_code == requests.codes.ok:
         df = pd.read_csv(StringIO(r.text), skipfooter=1,
@@ -57,10 +62,15 @@ def get_dividends(symbol, exchange, start=None, end=None,
     endpoint = "/div/{symbol_exchange}".format(symbol_exchange=symbol_exchange)
     url = EOD_HISTORICAL_DATA_API_URL + endpoint
     params = {
-        "from": _format_date(start),
-        "to": _format_date(end)
-        "api_token": api_key or get_api_key(),
+        "api_token": api_key or get_api_key()
     }
+
+    if start:
+        params["from"] = _format_date(start)
+
+    if end:
+        params["to"] = _format_date(end)
+
     r = session.get(url, params=params)
     if r.status_code == requests.codes.ok:
         df = pd.read_csv(StringIO(r.text), skipfooter=1,
