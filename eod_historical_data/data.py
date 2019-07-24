@@ -43,7 +43,8 @@ def get_eod_data(symbol, exchange, start=None, end=None,
     r = session.get(url, params=params)
     if r.status_code == requests.codes.ok:
         df = pd.read_csv(StringIO(r.text), skipfooter=1,
-                         parse_dates=[0], index_col=0)
+                         parse_dates=[0], index_col=0,
+                         engine="python")
         return df
     else:
         params["api_token"] = "YOUR_HIDDEN_API"
@@ -74,7 +75,8 @@ def get_dividends(symbol, exchange, start=None, end=None,
     r = session.get(url, params=params)
     if r.status_code == requests.codes.ok:
         df = pd.read_csv(StringIO(r.text), skipfooter=1,
-                         parse_dates=[0], index_col=0)
+                         parse_dates=[0], index_col=0,
+                         engine="python")
         assert len(df.columns) == 1
         ts = df["Dividends"]
         return ts
@@ -97,7 +99,7 @@ def get_exchange_symbols(exchange_code,
     }
     r = session.get(url, params=params)
     if r.status_code == requests.codes.ok:
-        df = pd.read_csv(StringIO(r.text), skipfooter=1, index_col=0)
+        df = pd.read_csv(StringIO(r.text), skipfooter=1, index_col=0, engine="python")
         return df
     else:
         params["api_token"] = "YOUR_HIDDEN_API"
@@ -153,7 +155,7 @@ def get_exchanges():
 42	OTC Market	OTC
 43	ETF-Euronext	NX
 44	Johannesburg Exchange	JSE"""
-    df = pd.read_csv(StringIO(data), sep="\t")
+    df = pd.read_csv(StringIO(data), sep="\t", engine="python")
     df = df.set_index("ID")
     return(df)
 
@@ -197,7 +199,7 @@ def get_currencies():
 31	FX	TRY
 32	FX	UYU
 33	FX	BTC"""
-    df = pd.read_csv(StringIO(data), sep="\t")
+    df = pd.read_csv(StringIO(data), sep="\t", engine="python")
     df = df.set_index("ID")
     return(df)
 
@@ -346,6 +348,6 @@ def get_indexes():
 136	INDX	IXE	^IXE: Select Sector Spdr-energy Inde
 137	INDX	IXIC	NASDAQ Composite
 138	INDX	SPEUP	S&P EUROPE 350"""
-    df = pd.read_csv(StringIO(data), sep="\t")
+    df = pd.read_csv(StringIO(data), sep="\t", engine="python")
     df = df.set_index("ID")
     return(df)
