@@ -85,6 +85,40 @@ def get_dividends(symbol, exchange="US", start=None, end=None,
         raise RemoteDataError(r.status_code, r.reason, _url(url, params))
 
 
+def get_splits(symbol, exchange="US", start=None, end=None,
+                  api_key=None,
+                  session=None):
+    """
+    Returns splits
+    """
+    symbol_exchange = symbol + "." + exchange
+    session = _init_session(session)
+    start, end = _sanitize_dates(start, end)
+    endpoint = "/splits/{symbol_exchange}".format(symbol_exchange=symbol_exchange)
+    url = EOD_HISTORICAL_DATA_API_URL + endpoint
+    params = {
+        "api_token": api_key or get_api_key()
+    }
+
+    if start:
+        params["from"] = _format_date(start)
+
+    if end:
+        params["to"] = _format_date(end)
+
+    r = session.get(url, params=params)
+    if r.status_code == requests.codes.ok:
+        df = pd.read_csv(StringIO(r.text), skipfooter=1,
+                         parse_dates=[0], index_col=0,
+                         engine="python")
+        assert len(df.columns) == 1
+        ts = df["Stock Splits"]
+        return ts
+    else:
+        params["api_token"] = "YOUR_HIDDEN_API"
+        raise RemoteDataError(r.status_code, r.reason, _url(url, params))
+
+
 def get_exchange_symbols(exchange_code,
                          api_key=None,
                          session=None):
