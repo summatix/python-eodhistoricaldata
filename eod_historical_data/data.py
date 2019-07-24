@@ -19,7 +19,7 @@ def get_api_key(env_var=EOD_HISTORICAL_DATA_API_KEY_ENV_VAR):
     return os.environ[env_var]
 
 
-def get_eod_data(symbol, exchange, start=None, end=None,
+def get_eod_data(symbol, exchange="US", start=None, end=None,
                  api_key=None,
                  session=None):
     """
@@ -51,7 +51,7 @@ def get_eod_data(symbol, exchange, start=None, end=None,
         raise RemoteDataError(r.status_code, r.reason, _url(url, params))
 
 
-def get_dividends(symbol, exchange, start=None, end=None,
+def get_dividends(symbol, exchange="US", start=None, end=None,
                   api_key=None,
                   session=None):
     """
