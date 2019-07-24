@@ -6,7 +6,6 @@ from ._utils import (_init_session, _format_date,
                      _sanitize_dates, _url, RemoteDataError)
 
 EOD_HISTORICAL_DATA_API_KEY_ENV_VAR = "EOD_HISTORICAL_API_KEY"
-EOD_HISTORICAL_DATA_API_KEY_DEFAULT = "OeAFFmMliFG5orCUuwAKQ8l4WWFQ67YX"
 EOD_HISTORICAL_DATA_API_URL = "https://eodhistoricaldata.com/api"
 
 
@@ -17,11 +16,11 @@ def get_api_key(env_var=EOD_HISTORICAL_DATA_API_KEY_ENV_VAR):
     bash> export EOD_HISTORICAL_API_KEY="YOURAPI"
     Returns default API key, if environment variable is not found
     """
-    return os.environ.get(env_var, EOD_HISTORICAL_DATA_API_KEY_DEFAULT)
+    return os.environ[env_var]
 
 
 def get_eod_data(symbol, exchange, start=None, end=None,
-                 api_key=EOD_HISTORICAL_DATA_API_KEY_DEFAULT,
+                 api_key=None,
                  session=None):
     """
     Returns EOD (end of day data) for a given symbol
@@ -32,7 +31,7 @@ def get_eod_data(symbol, exchange, start=None, end=None,
     endpoint = "/eod/{symbol_exchange}".format(symbol_exchange=symbol_exchange)
     url = EOD_HISTORICAL_DATA_API_URL + endpoint
     params = {
-        "api_token": api_key,
+        "api_token": api_key or get_api_key(),
         "from": _format_date(start),
         "to": _format_date(end)
     }
@@ -47,7 +46,7 @@ def get_eod_data(symbol, exchange, start=None, end=None,
 
 
 def get_dividends(symbol, exchange, start=None, end=None,
-                  api_key=EOD_HISTORICAL_DATA_API_KEY_DEFAULT,
+                  api_key=None,
                   session=None):
     """
     Returns dividends
@@ -58,9 +57,9 @@ def get_dividends(symbol, exchange, start=None, end=None,
     endpoint = "/div/{symbol_exchange}".format(symbol_exchange=symbol_exchange)
     url = EOD_HISTORICAL_DATA_API_URL + endpoint
     params = {
-        "api_token": api_key,
         "from": _format_date(start),
         "to": _format_date(end)
+        "api_token": api_key or get_api_key(),
     }
     r = session.get(url, params=params)
     if r.status_code == requests.codes.ok:
@@ -75,7 +74,7 @@ def get_dividends(symbol, exchange, start=None, end=None,
 
 
 def get_exchange_symbols(exchange_code,
-                         api_key=EOD_HISTORICAL_DATA_API_KEY_DEFAULT,
+                         api_key=None,
                          session=None):
     """
     Returns list of symbols for a given exchange
@@ -84,7 +83,7 @@ def get_exchange_symbols(exchange_code,
     endpoint = "/exchanges/{exchange_code}".format(exchange_code=exchange_code)
     url = EOD_HISTORICAL_DATA_API_URL + endpoint
     params = {
-        "api_token": api_key
+        "api_token": api_key or get_api_key()
     }
     r = session.get(url, params=params)
     if r.status_code == requests.codes.ok:
