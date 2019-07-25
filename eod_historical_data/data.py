@@ -128,7 +128,6 @@ def get_fundamentals(symbol, exchange="US",
     """
     symbol_exchange = symbol + "." + exchange
     session = _init_session(session)
-    start, end = _sanitize_dates(start, end)
     endpoint = "/fundamentals/{symbol_exchange}".format(symbol_exchange=symbol_exchange)
     url = EOD_HISTORICAL_DATA_API_URL + endpoint
     params = {
