@@ -1,4 +1,5 @@
 import os
+import json
 import requests
 import pandas as pd
 from pandas.compat import StringIO
@@ -114,6 +115,29 @@ def get_splits(symbol, exchange="US", start=None, end=None,
         assert len(df.columns) == 1
         ts = df["Stock Splits"]
         return ts
+    else:
+        params["api_token"] = "YOUR_HIDDEN_API"
+        raise RemoteDataError(r.status_code, r.reason, _url(url, params))
+
+
+def get_fundamentals(symbol, exchange="US",
+                     api_key=None,
+                     session=None):
+    """
+    Returns fundamentals
+    """
+    symbol_exchange = symbol + "." + exchange
+    session = _init_session(session)
+    start, end = _sanitize_dates(start, end)
+    endpoint = "/fundamentals/{symbol_exchange}".format(symbol_exchange=symbol_exchange)
+    url = EOD_HISTORICAL_DATA_API_URL + endpoint
+    params = {
+        "api_token": api_key or get_api_key()
+    }
+
+    r = session.get(url, params=params)
+    if r.status_code == requests.codes.ok:
+        return json.loads(r.text)
     else:
         params["api_token"] = "YOUR_HIDDEN_API"
         raise RemoteDataError(r.status_code, r.reason, _url(url, params))
